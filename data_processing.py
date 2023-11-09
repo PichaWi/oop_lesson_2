@@ -102,6 +102,7 @@ my_DB.insert(table4)
 my_DB.insert(table5)
 my_table1 = my_DB.search('cities')
 my_table4 = my_DB.search('players')
+my_table10 = my_DB.search('titanic')
 
 print("Test filter: only filtering out cities in Italy")
 my_table1_filtered = my_table1.filter(lambda x: x['country'] == 'Italy')
@@ -185,4 +186,43 @@ print((my_table13_sum / my_table13_len))
 print('vs')
 print('Passes made by midfielder position')
 print((my_table14_sum / my_table14_len))
+print()
+
+my_table15_filtered = my_table10.filter(lambda x: x['class'] == '1')
+my_table16_filtered = my_table10.filter(lambda x: x['class'] == '3')
+my_table15_sum = my_table15_filtered.aggregate(lambda x: sum(x), 'fare')
+my_table15_len = my_table15_filtered.aggregate(lambda x: len(x), 'fare')
+my_table16_sum = my_table16_filtered.aggregate(lambda x: sum(x), 'fare')
+my_table16_len = my_table16_filtered.aggregate(lambda x: len(x), 'fare')
+print('Fare of people in first class')
+print(my_table15_sum / my_table15_len)
+print('Vs')
+print('Fare of people in third class')
+print(my_table16_sum / my_table16_len)
+print()
+
+print('Survival rate of male vs female')
+male_yes = []
+male_no = []
+female_yes = []
+female_no = []
+my_table17_filtered = my_table10.filter(lambda x: x['gender'] == 'M').filter(lambda x: x['survived'] == 'yes')
+my_table18_filtered = my_table10.filter(lambda x: x['gender'] == 'F').filter(lambda x: x['survived'] == 'yes')
+my_table19_filtered = my_table10.filter(lambda x: x['gender'] == 'M').filter(lambda x: x['survived'] == 'no')
+my_table20_filtered = my_table10.filter(lambda x: x['gender'] == 'F').filter(lambda x: x['survived'] == 'no')
+for item in my_table17_filtered.table:
+    male_yes.append(item)
+for item1 in my_table18_filtered.table:
+    male_no.append(item1)
+for item2 in my_table19_filtered.table:
+    female_yes.append(item2)
+for item3 in my_table20_filtered.table:
+    female_no.append(item3)
+male_all = len(male_yes) + len(male_no)
+female_all = len(female_yes) + len(female_no)
+print('Rate of survived of male ')
+print(((male_all) - len(male_yes)) / male_all * 100)
+print('Vs')
+print('Rate of survived of female')
+print(((female_all) - len(female_yes)) / female_all * 100)
 print()
