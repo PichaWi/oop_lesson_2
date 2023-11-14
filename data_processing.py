@@ -103,19 +103,22 @@ class Table:
         unique_values_list = [set(item[key] for item in self.table) for key in keys_to_pivot_list]
         combinations = combination_gen.gen_comb_list(unique_values_list)
 
-        pivoted_table = Table(self.table_name + '_pivoted', [])
+        pivoted_table = []
 
         for combination in combinations:
             filtered_table = self
             for key, value in zip(keys_to_pivot_list, combination):
                 filtered_table = filtered_table.filter(lambda x: x[key] == value)
 
-            row = {key: value for key, value in zip(keys_to_pivot_list, combination)}
+            row = [value for value in combination]
 
             for agg_key, agg_func in zip(keys_to_aggregate_list, aggregate_func_list):
-                row[agg_key] = filtered_table.aggregate(agg_func, agg_key)
+                if not hasattr(agg_func, '__code__'):
+                    row.append(agg_func(filtered_table.table))
+                else:
+                    row.append(filtered_table.aggregate(agg_func, agg_key))
 
-            pivoted_table.table.append(row)
+            pivoted_table.append(row)
 
         return pivoted_table
 
@@ -269,3 +272,21 @@ my_pivot = my_table23.pivot_table(['class', 'gender', 'embarked'],
 print(my_pivot)
 print()
 
+my_table24 = my_DB.search('players')
+my_pivot2 = my_table24.pivot_table(['position'],
+                                   ['passes', 'shots'],
+                                   [lambda x: sum(x)/len(x), lambda x: sum(x)/len(x)])
+print(my_pivot2)
+print()
+
+my_pivot3 = my_table3.pivot_table(['EU', 'coastline'],
+                                  ['temperature', 'latitude', 'latitude'],
+                                  [lambda x: sum(x)/len(x), lambda x: min(x), lambda x: max(x)])
+print(my_pivot3)
+print()
+
+my_pivot4 = my_table23.pivot_table(['class', 'gender', 'survived'],
+                                   ['survived', 'fare'],
+                                   [lambda x: len(x), lambda x: sum(x)/len(x)])
+print(my_pivot4)
+print()
