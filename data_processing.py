@@ -226,3 +226,4 @@ print('Vs')
 print('Rate of survived of female')
 print(((female_all) - len(female_yes)) / female_all * 100)
 print()
+
